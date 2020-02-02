@@ -13,6 +13,11 @@ import org.slf4j.LoggerFactory;
 import com.sk.download.service.DownloadService;
 import com.sk.download.util.FilesUtil;
 
+/**
+ * 
+ * @author sunil
+ *
+ */
 public class DownloadHTTPFileServiceImpl implements DownloadService {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());

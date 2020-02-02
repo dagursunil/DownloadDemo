@@ -19,6 +19,11 @@ import com.sk.download.exception.DownloadException;
 import com.sk.download.service.DownloadService;
 import com.sk.download.util.FilesUtil;
 
+/**
+ * 
+ * @author sunil
+ *
+ */
 public class DownloadSFTPFileImpl implements DownloadService {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());

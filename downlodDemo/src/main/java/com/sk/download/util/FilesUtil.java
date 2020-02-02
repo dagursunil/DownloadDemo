@@ -4,6 +4,11 @@ import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
+/**
+ * 
+ * @author sunil
+ *
+ */
 public class FilesUtil {
 
 	public static boolean isValidPath(String path) {
