@@ -13,6 +13,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sk.download.exception.DownloadException;
 import com.sk.download.service.DownloadService;
 import com.sk.download.util.FilesUtil;
 
@@ -61,10 +62,13 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 				outputStream.close();
 				inputStream.close();
 			} else {
-				throw new Exception("Cound not connect to the server " + server);
+				throw new DownloadException("Cound not connect to the server " + server);
 			}
 
-		} catch (Exception e) {
+		} catch(DownloadException de) {
+			LOGGER.error(de.getMessage());
+		}
+		catch (Exception e) {
 			LOGGER.error("File download failed from server ",this.server);
 			FilesUtil.deleteFile(downloadFile);
 			e.printStackTrace();

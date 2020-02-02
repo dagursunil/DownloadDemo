@@ -15,6 +15,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.sk.download.exception.DownloadException;
 import com.sk.download.service.DownloadService;
 import com.sk.download.util.FilesUtil;
 
@@ -67,9 +68,13 @@ public class DownloadSFTPFileImpl implements DownloadService {
 				bis.close();
 				bos.close();
 			} else {
-				throw new Exception("Could not connect to Server " + this.server);
+				throw new DownloadException("Could not connect to Server " + this.server);
 			}
-		} catch (Exception ex) {
+		}
+		catch(DownloadException de) {
+			LOGGER.error(de.getMessage());
+		} 
+		catch (Exception ex) {
 			FilesUtil.deleteFile(newFile);
 			LOGGER.error("File download failed from server ",this.server);
 			ex.printStackTrace();
