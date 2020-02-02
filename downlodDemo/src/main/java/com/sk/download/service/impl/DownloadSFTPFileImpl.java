@@ -72,7 +72,7 @@ public class DownloadSFTPFileImpl implements DownloadService {
 				BufferedOutputStream bos = new BufferedOutputStream(os);
 				int readCount;
 				while ((readCount = bis.read(buffer)) > 0) {
-					LOGGER.info("Writing: ");
+					LOGGER.info("Writing to file: ");
 					bos.write(buffer, 0, readCount);
 				}
 				bis.close();
