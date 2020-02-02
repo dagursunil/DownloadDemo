@@ -7,6 +7,10 @@ package com.sk.download.exception;
  */
 public class DownloadException extends Exception {
 
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = 1870486180864565774L;
 	private String message;
 
 	public DownloadException(String message) {
