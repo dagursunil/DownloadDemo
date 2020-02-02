@@ -27,13 +27,19 @@ public class DownloadHTTPFileServiceImpl implements DownloadService {
 
 	@Override
 	public void download(String inputUrl, String outputLocation) throws IOException {
-		
+
 		int responseCode = getRepornseFromURL(inputUrl);
 		// always check HTTP response code first
 		if (responseCode == HttpURLConnection.HTTP_OK) {
 			String fileName = "";
 			fileName = getFileName(inputUrl, fileName);
-			String saveFilePath = outputLocation + File.separator + fileName;
+			String saveFilePath = "";
+			if (outputLocation.endsWith("/")) {
+				saveFilePath = outputLocation + fileName;
+			} else {
+				saveFilePath = outputLocation + File.separator + fileName;
+			}
+
 			try (BufferedInputStream in = new BufferedInputStream(url.openStream());
 					FileOutputStream fileOutputStream = new FileOutputStream(saveFilePath)) {
 				byte dataBuffer[] = new byte[1024];
@@ -42,8 +48,8 @@ public class DownloadHTTPFileServiceImpl implements DownloadService {
 					fileOutputStream.write(dataBuffer, 0, bytesRead);
 				}
 			} catch (IOException e) {
-				LOGGER.error("Error while downloading from HTTP server",inputUrl);
-				File newFile=new File(saveFilePath);
+				LOGGER.error("Error while downloading from HTTP server", inputUrl);
+				File newFile = new File(saveFilePath);
 				FilesUtil.deleteFile(newFile);
 				// handle exception
 			}
@@ -79,14 +85,14 @@ public class DownloadHTTPFileServiceImpl implements DownloadService {
 	}
 
 	public int getRepornseFromURL(String inputUrl) throws IOException {
-		int responseCode=0;
+		int responseCode = 0;
 		try {
 			url = new URL(inputUrl);
 			httpConn = (HttpURLConnection) url.openConnection();
 			responseCode = httpConn.getResponseCode();
 		} catch (IOException e) {
-			throw new IOException("Excpetion in getting reponse from URL "+inputUrl);
-		} 
+			throw new IOException("Excpetion in getting reponse from URL " + inputUrl);
+		}
 		return responseCode;
 	}
 

@@ -52,7 +52,12 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 			if (isConnected) {
 				String remoteFile = this.path;
 				String targetFile = this.path.substring(path.lastIndexOf("/"), path.length());
-				downloadFile = new File(outputLocation + "/" + targetFile);
+				if (!outputLocation.endsWith("/")) {
+					downloadFile = new File(outputLocation + "/" + targetFile);
+				} else {
+					downloadFile = new File(outputLocation + targetFile);
+				}
+
 				OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile));
 				InputStream inputStream = ftpClient.retrieveFileStream(remoteFile);
 				byte[] bytesArray = new byte[4096];
@@ -70,11 +75,10 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 				throw new DownloadException("Cound not connect to the server " + server);
 			}
 
-		} catch(DownloadException de) {
+		} catch (DownloadException de) {
 			LOGGER.error(de.getMessage());
-		}
-		catch (Exception e) {
-			LOGGER.error("File download failed from server ",this.server);
+		} catch (Exception e) {
+			LOGGER.error("File download failed from server ", this.server);
 			FilesUtil.deleteFile(downloadFile);
 			e.printStackTrace();
 		} finally {
@@ -89,8 +93,6 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 		}
 
 	}
-
-	
 
 	public boolean connectFTPServer() throws SocketException, IOException {
 		ftpClient = new FTPClient();

@@ -48,7 +48,7 @@ public class DownloadSFTPFileImpl implements DownloadService {
 	}
 
 	private void downloadFromSFTPServer(String outputLocation) {
-		File newFile=null;
+		File newFile = null;
 		try {
 			boolean isConnected = connectSFTPServer();
 			if (isConnected) {
@@ -62,7 +62,12 @@ public class DownloadSFTPFileImpl implements DownloadService {
 				}
 				byte[] buffer = new byte[1024];
 				BufferedInputStream bis = new BufferedInputStream(channelSftp.get(file));
-				newFile = new File(outputLocation + "/" + file);
+				if (outputLocation.endsWith("/")) {
+					newFile = new File(outputLocation + file);
+				} else {
+					newFile = new File(outputLocation + "/" + file);
+				}
+
 				OutputStream os = new FileOutputStream(newFile);
 				BufferedOutputStream bos = new BufferedOutputStream(os);
 				int readCount;
@@ -75,13 +80,11 @@ public class DownloadSFTPFileImpl implements DownloadService {
 			} else {
 				throw new DownloadException("Could not connect to Server " + this.server);
 			}
-		}
-		catch(DownloadException de) {
+		} catch (DownloadException de) {
 			LOGGER.error(de.getMessage());
-		} 
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			FilesUtil.deleteFile(newFile);
-			LOGGER.error("File download failed from server ",this.server);
+			LOGGER.error("File download failed from server ", this.server);
 			ex.printStackTrace();
 		}
 		LOGGER.info("Download successful from sftp server ");
