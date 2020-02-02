@@ -24,6 +24,7 @@ b.)	A new property 'output.location' has been introduced which should be a direc
 c.) last value in path separated by '/' is being regarded as file name. For example https://google.com/doodle in this url doodle will be considered as file name.
 
 # How to build
+
 Prerequisite :  maven should be installed and enabled.
 For executing the project directly from directory please follow steps mentioned below :
 
