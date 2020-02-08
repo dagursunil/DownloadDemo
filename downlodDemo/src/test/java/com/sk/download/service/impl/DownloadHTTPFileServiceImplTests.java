@@ -1,8 +1,8 @@
 package com.sk.download.service.impl;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class DownloadHTTPFileServiceImplTests {
 	}
 
 	@Test(expected = IOException.class)
-	public void testResponseFromUrlWhenUrlUnknown() throws MalformedURLException, IOException {
+	public void testResponseFromUrlWhenUrlUnknown() throws IOException {
 		String inputUrlUn = "https://www.testone.com/";
 		httpService = new DownloadHTTPFileServiceImpl();
 		httpService.getRepornseFromURL(inputUrlUn.trim());

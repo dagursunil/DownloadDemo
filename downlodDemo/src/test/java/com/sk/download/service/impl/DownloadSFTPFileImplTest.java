@@ -30,4 +30,12 @@ public class DownloadSFTPFileImplTest {
 		boolean isConnected=service.connectSFTPServer();
 		assertEquals(true,isConnected);
 	}
+	
+	@Test
+	public void testConnectFailureSFTPServer() throws Exception {
+		attributesMap.put(FilesUtil.USERNAME, null);
+		service.setDownloadAttributes(attributesMap);
+		boolean isConnected=service.connectSFTPServer();
+		assertEquals(false,isConnected);
+	}
 }

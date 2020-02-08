@@ -33,4 +33,12 @@ public class DownloadFTPFileServiceImplTests {
 		boolean isConnected=service.connectFTPServer();
 		assertEquals(true, isConnected);
 	}
+	
+	@Test
+	public void testConnectFTPServerFailed() throws SocketException, IOException {
+		attributesMap.put(FilesUtil.PORT, "228");
+		service.setDownloadAttributes(attributesMap);
+		boolean isConnected=service.connectFTPServer();
+		assertEquals(false, isConnected);
+	}
 }

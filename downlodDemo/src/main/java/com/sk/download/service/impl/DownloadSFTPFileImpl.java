@@ -109,20 +109,25 @@ public class DownloadSFTPFileImpl implements DownloadService {
 
 	}
 
-	public boolean connectSFTPServer() throws Exception {
-		JSch jsch = new JSch();
-		if (this.port != null && !this.port.isEmpty()) {
-			this.port = this.port.trim();
-			session = jsch.getSession(this.username, this.server, Integer.parseInt(this.port));
-		} else {
-			session = jsch.getSession(this.username, this.server);
-		}
-		session.setPassword(this.password);
-		java.util.Properties config = new java.util.Properties();
-		config.put("StrictHostKeyChecking", "no");
-		session.setConfig(config);
-		session.connect();
-		return session.isConnected();
+	public boolean connectSFTPServer(){
+		try {
+			JSch jsch = new JSch();
+			if (this.port != null && !this.port.isEmpty()) {
+				this.port = this.port.trim();
+				session = jsch.getSession(this.username, this.server, Integer.parseInt(this.port));
+			} else {
+				session = jsch.getSession(this.username, this.server);
+			}
+			session.setPassword(this.password);
+			java.util.Properties config = new java.util.Properties();
+			config.put("StrictHostKeyChecking", "no");
+			session.setConfig(config);
+			session.connect();
+			return session.isConnected();
+		} catch (JSchException|NumberFormatException e) {
+			LOGGER.error("Connection failed to server "+server);
+			return false;
+		} 
 	}
 
 	public String getServer() {

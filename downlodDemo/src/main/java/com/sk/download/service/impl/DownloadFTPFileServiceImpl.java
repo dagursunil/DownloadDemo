@@ -107,22 +107,27 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 
 	}
 
-	public boolean connectFTPServer() throws SocketException, IOException {
-		ftpClient = new FTPClient();
-		if (this.port != null && !this.port.isEmpty()) {
-			this.port = this.port.trim();
-			ftpClient.connect(server.trim(), Integer.parseInt(this.port));
-		} else {
-			ftpClient.connect(server.trim());
-		}
+	public boolean connectFTPServer()  {
+		try {
+			ftpClient = new FTPClient();
+			if (this.port != null && !this.port.isEmpty()) {
+				this.port = this.port.trim();
+				ftpClient.connect(server.trim(), Integer.parseInt(this.port));
+			} else {
+				ftpClient.connect(server.trim());
+			}
 
-		if (ftpClient.isConnected()) {
-			LOGGER.info("Connected to server");
-		}
-		ftpClient.login(this.username, this.password);
-		ftpClient.enterLocalPassiveMode();
-		ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-		return ftpClient.isConnected();
+			if (ftpClient.isConnected()) {
+				LOGGER.info("Connected to server "+this.server);
+			}
+			ftpClient.login(this.username, this.password);
+			ftpClient.enterLocalPassiveMode();
+			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+			return ftpClient.isConnected();
+		} catch (NumberFormatException|IOException e) {
+			LOGGER.error("Could not connect to server "+this.server);
+			return false;
+		}  
 	}
 
 	public String getServer() {
