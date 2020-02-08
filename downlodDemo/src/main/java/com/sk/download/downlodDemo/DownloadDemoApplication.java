@@ -24,7 +24,7 @@ import com.sk.download.util.FilesUtil;
  *
  */
 @SpringBootApplication
-public class DownlodDemoApplication implements CommandLineRunner {
+public class DownloadDemoApplication implements CommandLineRunner {
 
 	@Value("${input.urls}")
 	private String inputurl;
@@ -35,7 +35,7 @@ public class DownlodDemoApplication implements CommandLineRunner {
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public static void main(String[] args) {
-		SpringApplication.run(DownlodDemoApplication.class, args);
+		SpringApplication.run(DownloadDemoApplication.class, args);
 	}
 
 	@Override

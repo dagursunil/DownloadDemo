@@ -1,13 +1,13 @@
 package com.sk.download.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
-
-import com.jcraft.jsch.JSchException;
+import com.sk.download.util.FilesUtil;
 
 public class DownloadSFTPFileImplTest {
 
@@ -15,19 +15,19 @@ public class DownloadSFTPFileImplTest {
 	
    private String url="sftp://demo:password@test.rebex.net:22/pub/example/readme.txt";
 	
-//	@Test
-//	public void testParseUrl() {
-//		service=new DownloadSFTPFileImpl();
-//		String [] urlArr=url.split("//");
-//		service.parseUrl(urlArr[1]);
-//		assertEquals("test.rebex.net",service.getServer());
-//		assertEquals("/pub/example/readme.txt",service.getPath());
-//	}
-//	
-//	@Test
-//	public void testConnectSFTPServer() throws Exception {
-//		testParseUrl();
-//		boolean isConnected=service.connectSFTPServer();
-//		assertEquals(true,isConnected);
-//	}
+   private Map<String,String> attributesMap=new HashMap<>();
+	
+   @Before
+	public void setup() {
+	   service=new DownloadSFTPFileImpl();
+	   String [] urlArr=url.split("//");
+	   attributesMap=FilesUtil.parseUrl(urlArr[1]);
+	}
+   
+	@Test
+	public void testConnectSFTPServer() throws Exception {
+		service.setDownloadAttributes(attributesMap);
+		boolean isConnected=service.connectSFTPServer();
+		assertEquals(true,isConnected);
+	}
 }

@@ -51,7 +51,7 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 		}
 	}
 
-	private void setDownloadAttributes(Map<String, String> attributesMap) {
+	public void setDownloadAttributes(Map<String, String> attributesMap) {
 		this.server = attributesMap.get(FilesUtil.SERVER);
 		this.port = attributesMap.get(FilesUtil.PORT);
 		this.path = attributesMap.get(FilesUtil.PATH);
