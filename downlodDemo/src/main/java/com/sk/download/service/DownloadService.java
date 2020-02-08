@@ -2,6 +2,8 @@ package com.sk.download.service;
 
 import java.io.IOException;
 
+import com.sk.download.exception.DownloadException;
+
 /**
  * 
  * @author sunil
@@ -9,5 +11,5 @@ import java.io.IOException;
  */
 public interface DownloadService {
 
-	public void download(String inputUrl,String outputLocation) throws IOException;
+	public void download(String inputUrl, String outputLocation) throws IOException, DownloadException;
 }

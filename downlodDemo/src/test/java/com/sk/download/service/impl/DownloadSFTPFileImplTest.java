@@ -15,19 +15,19 @@ public class DownloadSFTPFileImplTest {
 	
    private String url="sftp://demo:password@test.rebex.net:22/pub/example/readme.txt";
 	
-	@Test
-	public void testParseUrl() {
-		service=new DownloadSFTPFileImpl();
-		String [] urlArr=url.split("//");
-		service.parseUrl(urlArr[1]);
-		assertEquals("test.rebex.net",service.getServer());
-		assertEquals("/pub/example/readme.txt",service.getPath());
-	}
-	
-	@Test
-	public void testConnectSFTPServer() throws Exception {
-		testParseUrl();
-		boolean isConnected=service.connectSFTPServer();
-		assertEquals(true,isConnected);
-	}
+//	@Test
+//	public void testParseUrl() {
+//		service=new DownloadSFTPFileImpl();
+//		String [] urlArr=url.split("//");
+//		service.parseUrl(urlArr[1]);
+//		assertEquals("test.rebex.net",service.getServer());
+//		assertEquals("/pub/example/readme.txt",service.getPath());
+//	}
+//	
+//	@Test
+//	public void testConnectSFTPServer() throws Exception {
+//		testParseUrl();
+//		boolean isConnected=service.connectSFTPServer();
+//		assertEquals(true,isConnected);
+//	}
 }

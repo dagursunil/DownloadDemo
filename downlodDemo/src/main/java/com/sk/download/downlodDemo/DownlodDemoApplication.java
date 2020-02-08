@@ -11,11 +11,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.sk.download.exception.DownloadException;
 import com.sk.download.service.DownloadService;
 import com.sk.download.service.impl.DownloadFTPFileServiceImpl;
 import com.sk.download.service.impl.DownloadHTTPFileServiceImpl;
 import com.sk.download.service.impl.DownloadSFTPFileImpl;
 import com.sk.download.util.FilesUtil;
+
 /**
  * 
  * @author sunil
@@ -47,15 +49,19 @@ public class DownlodDemoApplication implements CommandLineRunner {
 		ExecutorService service = Executors.newCachedThreadPool();
 		if (outputLocation != null && FilesUtil.isValidPath(outputLocation)
 				&& FilesUtil.locationExists(outputLocation)) {
+			DownloadService downloadService = null;
 			for (int i = 0; i < inputUrlArr.length; i++) {
 				String inputUrl = inputUrlArr[i];
 				if (inputUrl.startsWith("http") || inputUrl.startsWith("https")) {
-					httpDownloadService(inputurl, service, inputUrl);
+					downloadService = new DownloadHTTPFileServiceImpl();
+					downloadService(inputurl, service, inputUrl, downloadService);
 
 				} else if (inputUrl.startsWith("ftp")) {
-					ftpDpwnloadService(inputurl, service, inputUrl);
+					downloadService = new DownloadFTPFileServiceImpl();
+					downloadService(inputurl, service, inputUrl, downloadService);
 				} else if (inputUrl.startsWith("sftp")) {
-					sftpDownloadService(inputurl, service, inputUrl);
+					downloadService = new DownloadSFTPFileImpl();
+					downloadService(inputurl, service, inputUrl, downloadService);
 				}
 			}
 		} else {
@@ -64,38 +70,16 @@ public class DownlodDemoApplication implements CommandLineRunner {
 		service.shutdown();
 	}
 
-	private void sftpDownloadService(String inputurl, ExecutorService service, String inputUrl) {
-		DownloadService downloadService = new DownloadSFTPFileImpl();
+	private void downloadService(String inputurl, ExecutorService service, String inputUrl,
+			DownloadService downloadService) {
 		service.submit(() -> {
 			try {
 				downloadService.download(inputUrl, outputLocation);
-			} catch (IOException e) {
-				LOGGER.error("Error is downloading from SFTP URL", inputurl);
+			} catch (DownloadException | IOException e) {
+				LOGGER.error("Error in downloading from URL " + inputurl);
 				e.printStackTrace();
 			}
 		});
 	}
 
-	private void ftpDpwnloadService(String inputurl, ExecutorService service, String inputUrl) {
-		DownloadService downloadService = new DownloadFTPFileServiceImpl();
-		service.submit(() -> {
-			try {
-				downloadService.download(inputUrl, outputLocation);
-			} catch (IOException e) {
-				LOGGER.error("Error is downloading from FTP URL", inputurl);
-				e.printStackTrace();
-			}
-		});
-	}
-
-	private void httpDownloadService(String inputurl, ExecutorService service, String inputUrl) {
-		DownloadService downloadService = new DownloadHTTPFileServiceImpl();
-		service.submit(() -> {
-			try {
-				downloadService.download(inputUrl, outputLocation);
-			} catch (IOException e) {
-				LOGGER.error("Error is downloading from HTTP URL", inputurl);
-			}
-		});
-	}
 }

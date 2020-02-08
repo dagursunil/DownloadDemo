@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
+import java.util.Map;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -35,16 +36,30 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 	FTPClient ftpClient;
 
 	@Override
-	public void download(String inputUrl, String outputLocation) {
+	public void download(String inputUrl, String outputLocation) throws IOException, DownloadException {
 		String[] urlArr = inputUrl.split("//");
 		if (urlArr.length > 1) {
-			parseUrl(urlArr[1]);
-			downloadFromFTPServer(outputLocation);
+			Map<String, String> attributesMap = FilesUtil.parseUrl(urlArr[1]);
+			if (attributesMap.size() > 0) {
+				setDownloadAttributes(attributesMap);
+				downloadFromFTPServer(outputLocation);
+			} else {
+				throw new DownloadException("Input URL incorrect .Please verify the same.");
+			}
+		} else {
+			throw new DownloadException("Input URL incorrect .Please verify the same.");
 		}
-
 	}
 
-	private void downloadFromFTPServer(String outputLocation) {
+	private void setDownloadAttributes(Map<String, String> attributesMap) {
+		this.server = attributesMap.get(FilesUtil.SERVER);
+		this.port = attributesMap.get(FilesUtil.PORT);
+		this.path = attributesMap.get(FilesUtil.PATH);
+		this.username = attributesMap.get(FilesUtil.USERNAME);
+		this.password = attributesMap.get(FilesUtil.PASSWORD);
+	}
+
+	private void downloadFromFTPServer(String outputLocation) throws DownloadException, IOException {
 		File downloadFile = null;
 		try {
 
@@ -75,12 +90,10 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 				throw new DownloadException("Cound not connect to the server " + server);
 			}
 
-		} catch (DownloadException de) {
-			LOGGER.error(de.getMessage());
 		} catch (Exception e) {
 			LOGGER.error("File download failed from server ", this.server);
 			FilesUtil.deleteFile(downloadFile);
-			e.printStackTrace();
+			throw new DownloadException(e.getMessage());
 		} finally {
 			try {
 				if (ftpClient.isConnected()) {
@@ -88,7 +101,7 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 					ftpClient.disconnect();
 				}
 			} catch (IOException ex) {
-				ex.printStackTrace();
+				throw new IOException("FTP Connection failed from the server" + this.server);
 			}
 		}
 
@@ -110,47 +123,6 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 		ftpClient.enterLocalPassiveMode();
 		ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 		return ftpClient.isConnected();
-	}
-
-	public void parseUrl(String url) {
-		url = url.trim();
-		String params[] = url.split("@");
-		if (params[0].compareTo("") != 0) {
-			String paramsfst[] = params[0].split(":");
-			if (params.length == 1) {
-				if (paramsfst.length >= 1) {
-					this.server = parsePort(paramsfst[0]);
-					if (paramsfst.length == 2) {
-						this.port = parsePort(paramsfst[1]);
-					}
-				}
-			} else {
-				String paramssec[] = params[1].split(":");
-				if (paramssec.length >= 1) {
-					this.server = parsePort(paramssec[0]);
-					if (paramssec.length == 2) {
-						this.port = parsePort(paramssec[1]);
-					}
-				}
-				if (paramsfst.length == 2) {
-					this.username = paramsfst[0];
-					this.password = paramsfst[1];
-				}
-			}
-			if (url.contains("/")) {
-				this.path = url.substring(url.indexOf("/"), url.length());
-			}
-
-		}
-
-	}
-
-	private String parsePort(String port) {
-		int i = port.indexOf("/");
-		if (i == -1) {
-			return port;
-		}
-		return port.substring(0, i);
 	}
 
 	public String getServer() {

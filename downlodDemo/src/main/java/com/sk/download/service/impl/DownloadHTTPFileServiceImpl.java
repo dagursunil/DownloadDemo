@@ -9,6 +9,8 @@ import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sk.download.exception.DownloadException;
 import com.sk.download.service.DownloadService;
 import com.sk.download.util.FilesUtil;
 
@@ -25,7 +27,7 @@ public class DownloadHTTPFileServiceImpl implements DownloadService {
 	HttpURLConnection httpConn;
 
 	@Override
-	public void download(String inputUrl, String outputLocation) throws IOException {
+	public void download(String inputUrl, String outputLocation) throws IOException, DownloadException {
 
 		int responseCode = getRepornseFromURL(inputUrl);
 		// always check HTTP response code first
@@ -46,18 +48,18 @@ public class DownloadHTTPFileServiceImpl implements DownloadService {
 				while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
 					fileOutputStream.write(dataBuffer, 0, bytesRead);
 				}
+				LOGGER.info("Download file from HTTP server successful.");
 			} catch (IOException e) {
 				LOGGER.error("Error while downloading from HTTP server", inputUrl);
 				File newFile = new File(saveFilePath);
 				FilesUtil.deleteFile(newFile);
-				// handle exception
+				throw new DownloadException("Error while downloading from HTTP server" + inputUrl);
 			}
-			LOGGER.info("Download file from HTTP server successful.");
+
 		} else {
-			LOGGER.info("No file to download. Server replied HTTP code: " + responseCode);
+			throw new DownloadException("No file to download. Server replied HTTP code: " + responseCode);
 		}
 		httpConn.disconnect();
-
 	}
 
 	public String getFileName(String inputUrl, String fileName) {
