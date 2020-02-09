@@ -6,13 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.SocketException;
 import java.util.Map;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sk.download.exception.DownloadException;
 import com.sk.download.service.DownloadService;
@@ -33,11 +33,13 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 	private String password;
 	private String path;
 
+	@Autowired
 	FTPClient ftpClient;
 
 	@Override
 	public void download(String inputUrl, String outputLocation) throws IOException, DownloadException {
 		String[] urlArr = inputUrl.split("//");
+		setFtpClient(new FTPClient());
 		if (urlArr.length > 1) {
 			Map<String, String> attributesMap = FilesUtil.parseUrl(urlArr[1]);
 			if (attributesMap.size() > 0) {
@@ -59,7 +61,7 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 		this.password = attributesMap.get(FilesUtil.PASSWORD);
 	}
 
-	private void downloadFromFTPServer(String outputLocation) throws DownloadException, IOException {
+	public boolean downloadFromFTPServer(String outputLocation) throws DownloadException, IOException {
 		File downloadFile = null;
 		try {
 
@@ -86,6 +88,7 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 				}
 				outputStream.close();
 				inputStream.close();
+				return success;
 			} else {
 				throw new DownloadException("Cound not connect to the server " + server);
 			}
@@ -109,7 +112,7 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 
 	public boolean connectFTPServer()  {
 		try {
-			ftpClient = new FTPClient();
+			//ftpClient = new FTPClient();
 			if (this.port != null && !this.port.isEmpty()) {
 				this.port = this.port.trim();
 				ftpClient.connect(server.trim(), Integer.parseInt(this.port));
@@ -148,5 +151,9 @@ public class DownloadFTPFileServiceImpl implements DownloadService {
 
 	public FTPClient getFtpClient() {
 		return ftpClient;
+	}
+	
+	public void setFtpClient(FTPClient ftpClient) {
+		this.ftpClient=ftpClient;
 	}
 }

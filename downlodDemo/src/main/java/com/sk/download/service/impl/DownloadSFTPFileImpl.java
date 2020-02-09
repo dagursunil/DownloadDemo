@@ -63,7 +63,7 @@ public class DownloadSFTPFileImpl implements DownloadService {
 		this.password = attributesMap.get(FilesUtil.PASSWORD);
 	}
 
-	private void downloadFromSFTPServer(String outputLocation) throws IOException, DownloadException {
+	public boolean downloadFromSFTPServer(String outputLocation) throws IOException, DownloadException {
 		File newFile = null;
 		try {
 			boolean isConnected = connectSFTPServer();
@@ -94,18 +94,23 @@ public class DownloadSFTPFileImpl implements DownloadService {
 				LOGGER.info("Download successful from sftp server ");
 				bis.close();
 				bos.close();
+				if (session.isConnected()) {
+					session.disconnect();
+				}
+				return true;
 			} else {
 				throw new DownloadException("Could not connect to Server " + this.server);
 			}
 		} catch (Exception ex) {
 			FilesUtil.deleteFile(newFile);
 			LOGGER.error("File download failed from server ", this.server);
+			if (session.isConnected()) {
+				session.disconnect();
+			}
 			throw new DownloadException(ex.getMessage());
 		}
 
-		if (session.isConnected()) {
-			session.disconnect();
-		}
+		
 
 	}
 
